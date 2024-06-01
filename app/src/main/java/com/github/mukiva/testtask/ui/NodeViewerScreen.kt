@@ -1,7 +1,5 @@
 package com.github.mukiva.testtask.ui
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -58,25 +56,19 @@ internal fun NodeViewer(
     onBackAction: () -> Unit = {},
     onAddAction: (String) -> Unit = {}
 ) {
-    Crossfade(
-        targetState = nodeViewerState,
-        label = "NodeViewer",
-        modifier = modifier.fillMaxSize()
-    ) { state ->
-        when (state) {
-            is NodeViewerState.Content ->
-                NodeViewerContent(
-                    name = state.name,
-                    backButtonIsVisible = state.backButtonIsVisible,
-                    listState = state.childListState,
-                    onDelete = onDelete,
-                    goToChild = goToChild,
-                    onBackAction = onBackAction,
-                    onAddAction = { onAddAction(state.id) },
-                )
-            NodeViewerState.Error -> ErrorScreen()
-            NodeViewerState.Loading -> LoadingScreen()
-        }
+    when (nodeViewerState) {
+        is NodeViewerState.Content ->
+            NodeViewerContent(
+                name = nodeViewerState.name,
+                backButtonIsVisible = nodeViewerState.backButtonIsVisible,
+                listState = nodeViewerState.childListState,
+                onDelete = onDelete,
+                goToChild = goToChild,
+                onBackAction = onBackAction,
+                onAddAction = { onAddAction(nodeViewerState.id) },
+            )
+        NodeViewerState.Error -> ErrorScreen()
+        NodeViewerState.Loading -> LoadingScreen()
     }
 }
 

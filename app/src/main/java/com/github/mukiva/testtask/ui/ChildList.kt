@@ -28,16 +28,14 @@ internal fun ChildList(
     goToChild: (String) -> Unit = {}
 
 ) {
-    Crossfade(listState, label = "ChildList") { state ->
-        when (state) {
-            is ChildListState.Content -> ChildListContent(
-                childList = state.childList,
-                modifier = modifier,
-                onDelete = onDelete,
-                goToChild = goToChild
-            )
-            ChildListState.Empty -> EmptyScreen(modifier)
-        }
+    when (listState) {
+        is ChildListState.Content -> ChildListContent(
+            childList = listState.childList,
+            modifier = modifier,
+            onDelete = onDelete,
+            goToChild = goToChild
+        )
+        ChildListState.Empty -> EmptyScreen(modifier)
     }
 }
 

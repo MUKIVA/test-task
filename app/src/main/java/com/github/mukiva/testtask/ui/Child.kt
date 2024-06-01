@@ -65,8 +65,8 @@ internal fun ChildContent(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 16.dp)
             .clickable { onClick() }
+            .padding(start = 16.dp)
     ) {
         Text(
             text = name,
