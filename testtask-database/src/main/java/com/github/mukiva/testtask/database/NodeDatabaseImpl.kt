@@ -9,7 +9,7 @@ import com.github.mukiva.testtask.database.models.NodeDbo
     entities = [
         NodeDbo::class
     ],
-    version = 0,
+    version = 1,
     exportSchema = false
 )
 internal abstract class NodeDatabaseImpl() : RoomDatabase() {
