@@ -46,7 +46,6 @@ internal class NodeViewerComponent @AssistedInject constructor(
         flow { emit(Unit) }
             .flatMapLatest { loadNodeUseCase(nodeId) }
             .map(::asNodeViewerState)
-            .onEach { Log.d("STATE", "$it") }
             .stateIn(
                 scope = mComponentScope,
                 started = SharingStarted.Lazily,

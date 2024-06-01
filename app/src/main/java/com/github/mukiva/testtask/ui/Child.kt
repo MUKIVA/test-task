@@ -66,7 +66,7 @@ internal fun ChildContent(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(start = 16.dp)
+            .padding(start = 16.dp, end = 4.dp)
     ) {
         Text(
             text = name,
