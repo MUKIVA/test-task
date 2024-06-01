@@ -25,3 +25,4 @@ rootProject.name = "test-task"
 include(":app")
 include(":testtask-database")
 include(":testtask-data")
+include(":testtask-uikit")

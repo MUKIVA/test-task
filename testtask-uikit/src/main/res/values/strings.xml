@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_state_loading_message">Please, wait…</string>
+    <string name="list_state_error_message">Oops, something went wrong…</string>
+    <string name="list_state_empty_message">List is empty</string>
+
+    <string name="button_retry">Retry</string>
+</resources>
