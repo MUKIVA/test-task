@@ -16,7 +16,7 @@ interface NodeDao {
     suspend fun getFirstRoot(): NodeDbo?
     @Transaction
     @Query("SELECT * FROM NodeDbo WHERE id = :nodeId")
-    fun getNodeWithChildrenById(nodeId: String): Flow<NodeWithChildrenRelation>
+    fun getNodeWithChildrenObservableById(nodeId: String): Flow<NodeWithChildrenRelation>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNode(node: NodeDbo)
     @Delete
