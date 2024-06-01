@@ -6,4 +6,6 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlinxSerialization) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.ksp) apply false
 }
