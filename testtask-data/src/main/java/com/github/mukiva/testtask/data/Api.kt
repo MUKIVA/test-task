@@ -11,6 +11,6 @@ interface NodeRepository {
     suspend fun deleteNode(id: String)
 }
 
-fun createRepository(
+fun createNodeRepository(
     database: NodeDatabase
 ): NodeRepository = NodeRepositoryImpl(database)

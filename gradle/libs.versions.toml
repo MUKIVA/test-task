@@ -7,6 +7,7 @@ activityCompose = "1.9.0"
 compose-plugin = "1.6.10"
 ksp = "2.0.0-1.0.21"
 hilt = "2.51.1"
+hilt-navigation = "1.2.0"
 kotlinx-serialization = "1.7.0-RC"
 room = "2.6.1"
 decompose = "3.0.0"
@@ -21,6 +22,7 @@ decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-co
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation" }
 
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
@@ -33,7 +35,7 @@ jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-kotlinxSerialization = { id = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinx-serialization" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 
 
