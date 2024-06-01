@@ -1,6 +1,5 @@
 package com.github.mukiva.testtask.presentation
 
-import android.util.Log
 import com.arkivanov.decompose.ComponentContext
 import com.github.mukiva.testtask.data.NodeRepository
 import com.github.mukiva.testtask.data.utils.RequestResult
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
