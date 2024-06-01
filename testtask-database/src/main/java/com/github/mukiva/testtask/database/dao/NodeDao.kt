@@ -12,13 +12,24 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NodeDao {
-    @Query("SELECT * FROM NodeDbo WHERE parent_id IS NULL LIMIT 1")
+    @Query("SELECT * FROM nodedbo WHERE parent_id IS NULL LIMIT 1")
     suspend fun getFirstRoot(): NodeDbo?
     @Transaction
-    @Query("SELECT * FROM NodeDbo WHERE id = :nodeId")
+    @Query("SELECT * FROM nodedbo WHERE id = :nodeId")
     fun getNodeWithChildrenObservableById(nodeId: String): Flow<NodeWithChildrenRelation>
+    @Transaction
+    @Query("SELECT * FROM nodedbo WHERE id = :nodeId")
+    suspend fun getNodeWithChildrenById(nodeId: String): NodeWithChildrenRelation
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNode(node: NodeDbo)
-    @Delete
-    suspend fun deleteNode(node: NodeDbo)
+    @Query("DELETE FROM nodedbo WHERE id = :nodeId")
+    suspend fun deleteNodeById(nodeId: String)
+    @Transaction
+    suspend fun deleteNodeRecursive(nodeId: String) {
+        val nodeWithChildren = getNodeWithChildrenById(nodeId)
+        nodeWithChildren.children.onEach { node ->
+            deleteNodeRecursive(node.id)
+        }
+        deleteNodeById(nodeId)
+    }
 }

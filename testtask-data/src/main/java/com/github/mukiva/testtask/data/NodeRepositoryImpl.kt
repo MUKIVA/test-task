@@ -39,7 +39,8 @@ internal class NodeRepositoryImpl(
     }
 
     override suspend fun deleteNode(id: String) {
-        TODO("Not implemented")
+        nodeDatabase.nodeDao
+            .deleteNodeRecursive(id)
     }
 
     private suspend fun validateRootNode(): String {
