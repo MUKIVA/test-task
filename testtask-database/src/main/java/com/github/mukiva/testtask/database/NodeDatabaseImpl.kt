@@ -12,6 +12,6 @@ import com.github.mukiva.testtask.database.models.NodeDbo
     version = 1,
     exportSchema = false
 )
-internal abstract class NodeDatabaseImpl() : RoomDatabase() {
+internal abstract class NodeDatabaseImpl : RoomDatabase() {
     abstract fun nodeDao(): NodeDao
 }

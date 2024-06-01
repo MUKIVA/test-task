@@ -11,6 +11,7 @@ import com.github.mukiva.testtask.database.models.NodeDbo
 import com.github.mukiva.testtask.database.models.NodeWithChildrenRelation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -63,7 +64,7 @@ internal class NodeRepositoryImpl(
         val requestFlow = nodeDatabase.nodeDao
             .getNodeWithChildrenObservableById(id)
             .map { nodeWithChildren -> RequestResult.Success(nodeWithChildren) }
-            .map { success -> success as RequestResult<NodeWithChildrenRelation> }
+            .filterIsInstance<RequestResult<NodeWithChildrenRelation>>()
             .catch { cause ->
                 Log.e("NodeRepositoryImpl", "${cause.stackTrace}")
                 emit(RequestResult.Error(null, cause))
