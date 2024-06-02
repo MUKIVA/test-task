@@ -1,7 +1,7 @@
 package com.github.mukiva.testtask.presentation
 
 import com.arkivanov.decompose.ComponentContext
-import com.github.mukiva.testtask.data.NodeRepository
+import com.arkivanov.decompose.childContext
 import com.github.mukiva.testtask.data.utils.RequestResult
 import com.github.mukiva.testtask.domain.Node
 import com.github.mukiva.testtask.domain.usecase.LoadNodeUseCase
@@ -11,23 +11,32 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+
+interface INodeViewerComponent {
+    val state: StateFlow<NodeViewerState>
+    val childListComponent: IChildListComponent
+    val nodeAppBarComponent: INodeAppBarComponent
+    fun retry()
+}
 
 internal class NodeViewerComponent @AssistedInject constructor(
     private val loadNodeUseCase: LoadNodeUseCase,
-    private val repository: NodeRepository,
+    childListComponentFactory: ChildListComponent.Factory,
+    nodeAppBarComponentFactory: NodeAppBarComponent.Factory,
     @Assisted componentContext: ComponentContext,
-    @Assisted nodeId: String?,
-    @Assisted val navigateToChild: (String) -> Unit,
-    @Assisted val navigateUp: () -> Unit
-) : ComponentContext by componentContext {
+    @Assisted private val nodeId: String?,
+    @Assisted private val navigateToChild: (String) -> Unit,
+    @Assisted private val navigateUp: () -> Unit
+) : ComponentContext by componentContext, INodeViewerComponent {
 
     @AssistedFactory
     interface Factory {
@@ -39,61 +48,52 @@ internal class NodeViewerComponent @AssistedInject constructor(
         ): NodeViewerComponent
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val state: StateFlow<NodeViewerState> by lazy {
-        flow { emit(Unit) }
-            .flatMapLatest { loadNodeUseCase(nodeId) }
-            .map(::asNodeViewerState)
-            .stateIn(
-                scope = mComponentScope,
-                started = SharingStarted.Lazily,
-                initialValue = NodeViewerState.Loading
-            )
-    }
+    override val state: StateFlow<NodeViewerState>
+        get() = mState.asStateFlow()
 
+    override val childListComponent = childListComponentFactory.create(
+        componentContext = childContext(CHILD_LIST_COMPONENT_KEY),
+        navigateToChild = navigateToChild
+    )
+
+    override val nodeAppBarComponent = nodeAppBarComponentFactory.create(
+        componentContext = childContext(NODE_APP_BAR_COMPONENT_KEY),
+        navigateUp = navigateUp
+    )
+
+    private val mState = MutableStateFlow<NodeViewerState>(NodeViewerState.Loading)
     private val mComponentScope = CoroutineScope(AppDispatchers.default + SupervisorJob())
+    private var mNodeLoaderJob: Job = createRequestJob()
 
-    fun addNode(parentId: String) {
-        mComponentScope.launch(AppDispatchers.io) {
-            repository.addNode(parentId)
-        }
+    override fun retry() {
+        mNodeLoaderJob.cancel()
+        mNodeLoaderJob = createRequestJob()
     }
 
-    fun deleteNode(nodeId: String) {
-        mComponentScope.launch(AppDispatchers.io) {
-            repository.deleteNode(nodeId)
-        }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun createRequestJob(): Job {
+        return flow { emit(Unit) }
+            .flatMapLatest { loadNodeUseCase(nodeId) }
+            .onEach { requestResult -> notifyDataSetChanged(requestResult) }
+            .launchIn(mComponentScope)
     }
 
     private fun asNodeViewerState(requestResult: RequestResult<Node>): NodeViewerState {
         return when (requestResult) {
             is RequestResult.Error -> NodeViewerState.Error
             is RequestResult.InProgress -> NodeViewerState.Loading
-            is RequestResult.Success -> {
-                val data = checkNotNull(requestResult.data)
-                NodeViewerState.Content(
-                    id = data.id,
-                    name = data.name,
-                    backButtonIsVisible = data.parentId != null,
-                    childListState = asChildListState(data.childList)
-                )
-            }
+            is RequestResult.Success -> NodeViewerState.Content
         }
     }
 
-    private fun asChildListState(list: List<Node>): ChildListState {
-        return when {
-            list.isEmpty() -> ChildListState.Empty
-            else -> ChildListState.Content(
-                childList = list.map(::asChildState)
-            )
-        }
+    private fun notifyDataSetChanged(requestResult: RequestResult<Node>) {
+        mState.tryEmit(asNodeViewerState(requestResult))
+        childListComponent.submitList(requestResult)
+        nodeAppBarComponent.updateAppBarState(requestResult)
     }
 
-    private fun asChildState(node: Node): ChildState {
-        return ChildState.Content(
-            id = node.id,
-            name = node.name
-        )
+    companion object {
+        private const val CHILD_LIST_COMPONENT_KEY = "CHILD_LIST_COMPONENT_KEY"
+        private const val NODE_APP_BAR_COMPONENT_KEY = "NODE_APP_BAR_COMPONENT_KEY"
     }
 }

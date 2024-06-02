@@ -7,32 +7,38 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.github.mukiva.testtask.data.utils.RequestResult
+import com.github.mukiva.testtask.domain.Node
 import com.github.mukiva.testtask.presentation.ChildListState
 import com.github.mukiva.testtask.presentation.ChildState
+import com.github.mukiva.testtask.presentation.IChildListComponent
 import com.github.mukiva.testtask.uikit.EmptyScreen
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 @Preview(
     showBackground = true
 )
 internal fun ChildList(
-    @PreviewParameter(ChildListStateProvider::class)
-    listState: ChildListState,
+    @PreviewParameter(ChildListComponentProvider::class)
+    component: IChildListComponent,
     modifier: Modifier = Modifier,
-    onDelete: (String) -> Unit = {},
-    goToChild: (String) -> Unit = {}
-
 ) {
-    when (listState) {
+    val listState by component.state.collectAsState()
+
+    when (val instance = listState) {
         is ChildListState.Content -> ChildListContent(
-            childList = listState.childList,
+            childList = instance.childList,
             modifier = modifier,
-            onDelete = onDelete,
-            goToChild = goToChild
+            onDelete = component::deleteNode,
+            goToChild = component.navigateToChild
         )
         ChildListState.Empty -> EmptyScreen(modifier)
     }
@@ -63,19 +69,30 @@ internal fun ChildListContent(
     }
 }
 
-internal class ChildListStateProvider : PreviewParameterProvider<ChildListState> {
-    override val values: Sequence<ChildListState>
+internal class ChildListComponentProvider : PreviewParameterProvider<IChildListComponent> {
+
+    override val values: Sequence<IChildListComponent>
         get() = sequenceOf(
-            ChildListState.Empty,
-            ChildListState.Content(
+            createMockComponent(ChildListState.Empty),
+            createMockComponent(ChildListState.Content(
                 childList = listOf(
-                    ChildState.Content("1", "Samle name 1"),
-                    ChildState.Content("2", "Samle name 2"),
-                    ChildState.Content("3", "Samle name 3"),
-                    ChildState.InProgress("4"),
-                    ChildState.Content("5", "Samle name 3"),
+                    ChildState.Content("1", "Child 1"),
+                    ChildState.Content("2", "Child 2"),
+                    ChildState.InProgress("3"),
+                    ChildState.Content("4", "Child 4")
                 )
-            )
+            ))
         )
 
+    private fun createMockComponent(listState: ChildListState): IChildListComponent {
+        return object : IChildListComponent {
+            override val state: StateFlow<ChildListState> =
+                MutableStateFlow(listState)
+            override val navigateToChild: (String) -> Unit = {}
+
+            override fun deleteNode(nodeId: String) {}
+
+            override fun submitList(requestResult: RequestResult<Node>) {}
+        }
+    }
 }

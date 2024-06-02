@@ -22,7 +22,7 @@ internal fun AppContent(
     ) { createdChild ->
         when (val instance = createdChild.instance) {
             is AppComponent.Child.NodeViewer ->
-                NodeViewerScreen(instance.component)
+                NodeViewer(instance.component)
         }
     }
 }

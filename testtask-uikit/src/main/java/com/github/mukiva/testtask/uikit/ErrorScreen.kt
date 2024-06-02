@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 )
 fun ErrorScreen(
     modifier: Modifier = Modifier,
-    onRefresh: () -> Unit = {}
+    onRetry: () -> Unit = {}
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -33,7 +33,7 @@ fun ErrorScreen(
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.size(dimensionResource(R.dimen.default_spacer_size)))
-        FilledTonalButton(onClick = onRefresh) {
+        FilledTonalButton(onClick = onRetry) {
             Text(stringResource(R.string.button_retry))
         }
     }
