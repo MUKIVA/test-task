@@ -1,5 +1,7 @@
 package com.github.mukiva.testtask.presentation
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import com.arkivanov.decompose.ComponentContext
 import com.github.mukiva.testtask.data.NodeRepository
 import com.github.mukiva.testtask.data.utils.RequestResult
@@ -14,10 +16,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+@Stable
 interface INodeAppBarComponent {
+    @Stable
     val state: StateFlow<NodeAppBarState>
+    @Stable
     val navigateUp: () -> Unit
+    @Stable
     fun updateAppBarState(requestResult: RequestResult<Node>)
+    @Stable
     fun addNode(parentId: String)
 }
 

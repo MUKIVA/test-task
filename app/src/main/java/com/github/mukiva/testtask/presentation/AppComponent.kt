@@ -1,5 +1,7 @@
 package com.github.mukiva.testtask.presentation
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
@@ -12,6 +14,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.serialization.Serializable
 
+@Stable
 internal class AppComponent @AssistedInject constructor(
     private val nodeViewerComponentFactory: NodeViewerComponent.Factory,
     @Assisted componentContext: ComponentContext
@@ -22,8 +25,12 @@ internal class AppComponent @AssistedInject constructor(
             componentContext: ComponentContext
         ): AppComponent
     }
+    @Immutable
     sealed class Child {
-        data class NodeViewer(val component: NodeViewerComponent) : Child()
+        @Immutable
+        data class NodeViewer(
+            val component: NodeViewerComponent
+        ) : Child()
     }
     @Serializable
     sealed class ChildConfig {
@@ -33,6 +40,7 @@ internal class AppComponent @AssistedInject constructor(
 
     private val mNavigation = StackNavigation<ChildConfig>()
 
+    @Stable
     val stack: Value<ChildStack<*, Child>> =
         childStack(
             source = mNavigation,

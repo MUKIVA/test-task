@@ -8,7 +8,8 @@ compose-plugin = "1.6.10"
 ksp = "2.0.0-1.0.21"
 hilt = "2.51.1"
 hilt-navigation = "1.2.0"
-kotlinx-serialization = "1.7.0-RC"
+kotlinx-collections-immutable = "0.3.7"
+kotlinx-serialization = "2.0.0"
 room = "2.6.1"
 decompose = "3.0.0"
 
@@ -27,6 +28,7 @@ hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", version.re
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

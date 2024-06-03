@@ -1,5 +1,6 @@
 package com.github.mukiva.testtask.presentation
 
+import androidx.compose.runtime.Stable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.github.mukiva.testtask.data.utils.RequestResult
@@ -21,10 +22,15 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
+@Stable
 interface INodeViewerComponent {
+    @Stable
     val state: StateFlow<NodeViewerState>
+    @Stable
     val childListComponent: IChildListComponent
+    @Stable
     val nodeAppBarComponent: INodeAppBarComponent
+    @Stable
     fun retry()
 }
 
